@@ -1,40 +1,34 @@
-def ip_decimal_to_binary(ip_address):
+def ip_decimal_to_binary(ip_address):  # function returns binary ip
     return ' '.join([bin(int(x)+256)[3:] for x in ip_address.split('.')])
 
 
 def longest_prefix_match(ip_address, forwarding_table):
     # Initialize longest_match as None
     longest_match = None
-    matches = [0]*(len(forwarding_table)+1)
+    matches = [0]*(len(forwarding_table)+1)  # initialize # of matches array. Elements correspond to interfaces
     bin_address = ip_decimal_to_binary(ip_address)
     print(bin_address)
 
     # Fill in start
     # Look up the forwarding table to find the longest prefix match record
-    for x in forwarding_table:
-        # print(len(x['prefix']))
-        pos = 0
-        current = x['prefix'][pos]
-        # print(f"{current} {pos}")
+    for x in forwarding_table:  # checks each address in forwarding table
+        pos = 0  # resets position in ip address
+        current = x['prefix'][pos]  # current entry in the forwarding table
         while pos < len(x['prefix']) - 1:
-            if current == bin_address[pos]:
+            if current == bin_address[pos]:  # in case of digit match
                 matches[x['interface']] += 1
                 pos += 1
                 current = x['prefix'][pos]
-                # print(f"{current} {pos}")
-            elif current == '*' or current == ' ':
+            elif current == '*' or current == ' ':  # if space or wildcard, only move forward
                 pos += 1
                 current = x['prefix'][pos]
-                # print(f"{current} {pos}")
-            else:
+            else:  # a mismatch will make the matches element of forward address 0 to reflect a mismatch and exit loop
                 matches[x['interface']] = 0
                 break
 
-    longest_match = matches.index(max(matches))
+    longest_match = matches.index(max(matches))  # sets the longest match out of all forwarding address interfaces
     if longest_match == 0:
-        longest_match = None
-
-    # Fill in end
+        longest_match = None  # in case of no matches
 
     return longest_match
 
